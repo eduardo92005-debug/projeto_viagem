@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  distancia-api:
+    build:
+      context: ../distancia_api
+    environment:
+      - BRASILAPI_URL=https://brasilapi.com.br/api
+    ports: ["8001:8001"]
+    restart: unless-stopped
+
+  viagens-api:
+    build:
+      context: .
+    ports: ["8000:8000"]
+    environment:
+      - DATABASE_URL=sqlite:////app/data/viagens.db
+      - DISTANCIA_API_URL=http://distancia-api:8001
+      - BRASILAPI_URL=https://brasilapi.com.br/api
+    volumes:
+      - viagens_data:/app/data
+    depends_on: [distancia-api]
+    restart: unless-stopped
+
+volumes:
+  viagens_data:
